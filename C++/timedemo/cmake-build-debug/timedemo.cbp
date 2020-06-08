@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="timedemo"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="E:/Server/Repository/Git/CodeCollector/C++/timedemo/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="timedemo">
+				<Option output="E:/Server/Repository/Git/CodeCollector/C++/timedemo/cmake-build-debug/timedemo.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/Server/Repository/Git/CodeCollector/C++/timedemo/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="D:\Software_Installment\vs\VC\INCLUDE"/>
+					<Add directory="D:\Software_Installment\vs\VC\ATLMFC\INCLUDE"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\8.1\include\\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\8.1\include\\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\8.1\include\\winrt"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\VC98\atl\Include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\VC98\mfc\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\VC98\Include"/>
+					<Add directory="C:\mysql-5.5.60-win32\include"/>
+					<Add directory="C:\MinGW\include;"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 timedemo"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="timedemo/fast">
+				<Option output="E:/Server/Repository/Git/CodeCollector/C++/timedemo/cmake-build-debug/timedemo.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/Server/Repository/Git/CodeCollector/C++/timedemo/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="D:\Software_Installment\vs\VC\INCLUDE"/>
+					<Add directory="D:\Software_Installment\vs\VC\ATLMFC\INCLUDE"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.10240.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\8.1\include\\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\8.1\include\\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\8.1\include\\winrt"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\VC98\atl\Include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\VC98\mfc\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\VC98\Include"/>
+					<Add directory="C:\mysql-5.5.60-win32\include"/>
+					<Add directory="C:\MinGW\include;"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 timedemo/fast"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="E:/Server/Repository/Git/CodeCollector/C++/timedemo/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="E:/Server/Repository/Git/CodeCollector/C++/timedemo/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Server\Repository\Git\CodeCollector\C++\timedemo\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="E:/Server/Repository/Git/CodeCollector/C++/timedemo/main.cpp">
+			<Option target="timedemo"/>
+		</Unit>
+		<Unit filename="E:/Server/Repository/Git/CodeCollector/C++/timedemo/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
