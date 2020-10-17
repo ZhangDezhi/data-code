@@ -1,0 +1,8 @@
+
+#网络时钟校对
+#NTP（Network Time Protocol，网络时间协议）是一种使网络上的计算机时钟与时间源保bai持精确同步的网际协议。它可以将本地时钟与标准时钟的误差保持在1毫秒以内。
+#复旦大学网络中心提供的NTP服务器地址是：ntp.fudan.edu.cn
+
+
+net time \\erp /set /y
+net time \\(目标电脑) /set /y
