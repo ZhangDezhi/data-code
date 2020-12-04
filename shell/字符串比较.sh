@@ -84,3 +84,43 @@ fi
 if [[ $A > $B ]];then
 echo "[[ > ]]" 
 fi
+
+# 忽略大小写比较 
+
+##   借助tr命令来处理
+name1="TOm"
+name2="tom"
+ 
+temp1=$(echo $name1 | tr [a-z] [A-Z])    # 将name1全部转变成大写再做比较
+temp2=$(echo $name2 | tr [a-z] [A-Z])    # 将name2全部转变成大写再做比较
+ 
+if [ x"$temp1" = x"$temp2" ];then        # x$"temp1"前面加x防止其中为空
+    echo "OK"
+else
+    echo "NO"
+fi
+
+## 借助grep命令来处理
+name="TOM"
+ 
+if echo "$name" | grep -qwi "tom"
+then
+    echo "OK"
+else
+    echo "NO"
+fi 
+#    -q        # 静默的方式，即不会产生输出，成功则$?返回0，刚好走if的条件分支，非常巧妙！
+#    -i         # 匹配字符串，但忽略大小写
+#    -w       # 按照单词进行匹配 
+
+# 借助shopt命令来处理
+
+name1="TOM"
+name2="tom"
+ 
+shopt -s nocasematch   # 打开Bash的开关，忽略大小写
+ 
+case "$name1" in
+    $name2)  echo "MATCH"  ;;
+         *)  echo "NO"     ;;
+esac
