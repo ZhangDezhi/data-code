@@ -1,6 +1,6 @@
 # 方法1：while循环中执行效率最高，最常用的方法。
 function while_read_LINE_bottm(){
-While read LINE
+while read LINE
 do
 echo $LINE
 done  < $FILENAME
