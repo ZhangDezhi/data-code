@@ -1,0 +1,202 @@
+
+
+if [ "$1" = "-v" ] ; then
+verbose=1
+PVFLAG="-v"
+else
+verbose=0
+PVFLAG=" "
+fi 
+export verbose
+
+cd /tmp
+
+##### LISTADO DE LVOLS ######
+#### USO Y ABUSO POR VG 
+FILEWRK=/tmp/UT_DSK.wrk
+export FILEWRK
+vgdisplay -v >$FILEWRK
+
+echo 
+echo 
+echo 
+echo "LISTADO DE GRUPOS DE VOLUMENES "
+echo 
+echo 
+
+awk ' 
+    BEGIN{ printf "%15s %10s %10s %10s %10s %10s \n" ,"VG NAME", "#DSK/MAX", "#LV/MAX" ,"LIBRE" , "USADO" , "MAXIMO"} 
+
+$1 == "VG" && $2 == "Name" { 
+        if ( verbose )
+            print ""
+	                			#VG Name                     /dev/vg00
+        vg=$3; getline 				#LEE #VG Write Access             read/write     
+        getline					#LEE #VG Status                   available                 
+        getline 				#LEE #Max LV                      255    
+        mxlv=$3;getline 			#LEE #Cur LV                      16     
+        aclv=$3;getline 			#LEE #Open LV                     16     
+        getline 				#LEE #Max PV                      16     
+        mxpv=$3;getline 			#LEE #Cur PV                      6      
+        acpv=$3;getline 			#LEE #Act PV                      6      
+        getline 				#LEE #Max PE per PV               2000         
+        getline 				#LEE #VGDA                        12  
+        getline 				#LEE #PE Size (Mbytes)            4               
+        getline 				#LEE #Total PE                    7062    
+        tope=$3;getline 			#LEE #Alloc PE                    5792    
+        acpe=$3;getline 			#LEE #Free PE                     1270    
+        frpe=$3;getline 			#LEE #Total PVG                   0        
+        topvg=$3;getline 			#LEE #Total Spare PVs             0              
+        getline
+        printf "%15s  %4d/%4d  %4d/%4d %10d %10d %10d \n" ,vg ,acpv, mxpv , aclv, mxlv ,frpe*4 , acpe*4 , tope*4 
+        t_frpe +=frpe 
+        t_acpe +=acpe 
+        t_tope +=tope 
+        }
+  $0 == "   --- Physical volumes ---" {
+        if ( verbose )
+            print ""
+
+	for ( i=0 ; i < acpv ; i++)
+            {
+            alt_pv=""
+            getline					#   PV Name                     /dev/dsk/c1t6d0
+            pv=$3; getline				#   PV Status                   available                
+            while ($1 == "PV" && $4 == "Alternate")	#   PV Name                     /dev/dsk/c5t1d0	Alternate Link
+	        {
+	        alt_pv=alt_pv " [" $3 "]"
+	        getline
+	        }
+            getline					#   Total PE                    1023    
+            pvpe=$3;getline				#   Free PE                     139     
+            pvfree=$3;getline
+	if ( $1 == "Autoswitch" )			#   Autoswitch                  On    
+			{
+			getline
+			}
+
+            if ( verbose )
+                printf " %35s  %10d %10d %10d %s\n", pv ,pvfree*4,(pvpe - pvfree)*4 ,pvpe*4, alt_pv
+
+            print pv > listapvs
+            }
+
+        if ( verbose )
+        print "________________________________________________________________________________________________________________"
+        } 
+
+#  $0 == "   --- Physical volume groups ---" {
+#for ( i=0 ; i < topvg ; i++)
+#   PVG Name                    PVPROapp        
+#   PV Name                     /dev/dsk/c3t3d6 
+#   PV Name                     /dev/dsk/c5t4d
+#}
+
+
+    END { printf "%15s  %9s  %9s %10d %10d %10d \n" ,"TOTAL" ," "," " ,t_frpe*4 , t_acpe*4 , t_tope*4 }
+' verbose=$verbose listapvs=$FILEWRK.pvs  $FILEWRK
+
+###############################################################################################################################
+##### LISTADO DE LVOLS ######
+#### USO Y ABUSO POR VG Y LVOL
+echo 
+echo 
+echo 
+echo "LISTADO DE VOLUMENES LOGICOS"
+echo 
+echo 
+
+
+egrep "LV Name|LV Size \(Mbytes\)|Current LE|Allocated PE|Used PV"  $FILEWRK> $FILEWRK.2
+
+awk '{ 
+    lv=$3;getline	 		#   LV Name                     /dev/vg00/lvol1
+    si=$4;getline 			#   LV Size (Mbytes)            68              
+    le=$3; getline			#   Current LE                  17        
+    pe=$3; getline			#   Allocated PE                34          
+    pv=$3; 				#   Used PV                     2       
+    print lv,si, le, pe, pv
+    }' $FILEWRK.2 >$FILEWRK.3
+
+### ORACLE linked datafiles
+
+ll /usr/oracle7/7.3.3/dbs/base/* | grep -- "->" |awk ' { print $11, $9 }' > $FILEWRK.4
+ll /usr/oracle8/8.0.3/dbs/base/* | grep -- "->" |awk ' { print $11, $9 }' >> $FILEWRK.4
+sed -e 's#/rlv#/lv#' $FILEWRK.4 > $FILEWRK.4.2
+mv $FILEWRK.4.2 $FILEWRK.4
+
+### FILESYSTEMS
+grep "^/dev" /etc/fstab | awk '  $3 == "swap"  { print $1 , $3 }
+$3 == "hfs" { print $1 , $2 }' > $FILEWRK.5
+#bdf | awk ' NR > 1 { print $1 , $NF }' >> $FILEWRK.5
+df -l | awk ' { s=split(substr ($2,2),lv,")"); print lv[1] , $1 }' >> $FILEWRK.5
+sort -u $FILEWRK.5 > $FILEWRK.5.o
+cat $FILEWRK.5.o >> $FILEWRK.4
+
+###  datamixer 
+sort $FILEWRK.3 > $FILEWRK.3.o
+sort $FILEWRK.4 > $FILEWRK.4.o
+join -o 1.1 2.2 1.2 1.3 1.4 1.5 -a 1 -e "----------" $FILEWRK.3.o $FILEWRK.4.o >  $FILEWRK.lvs
+
+# Formated output
+awk '  BEGIN { printf "%-30s %-30s %10s %8s %8s\n", "LV NAME", "USADO POR" ,"MBYTES" , "#MIRROR", "#DISCOS"}
+{printf "%-30s %-30s %10d %8d %8d \n", $1, $2, $3 ,($5/$4)-1 , $6}' $FILEWRK.lvs
+
+
+
+#################################
+#LISTADO POR VOLUMENES FISICOS 
+#################################
+echo 
+echo LISTADO POR VOLUMENES FISICOS
+echo 
+echo 
+printf "%25s %10s %5s %10s %10s %10s \n" "DISCO  " "VG      " "#LV    " "LIBRE"  "USADO"  "MAXIMO"
+
+for pvn in ` cat  $FILEWRK.pvs`
+    do
+
+    pvdisplay $PVFLAG $pvn | awk '
+        $0 == "--- Physical volumes ---" {
+            getline				#PV Name                     /dev/dsk/c5t0d4
+            pv=$3; getline
+            while ($1 == "PV" && $4 == "Alternate")	#   PV Name                     /dev/dsk/c5t1d4	Alternate Link
+	        {
+	        alt_pv=alt_pv " [" $3 "]"
+	        getline
+	        }
+						#VG Name                     /dev/vg02
+            vg=$3;getline			#PV Status                   available                
+            getline				#Allocatable                 yes          
+            getline				#VGDA                        2   
+            getline				#Cur LV                      9      
+            nlvs=$3;getline			#PE Size (Mbytes)            4               
+            getline				#Total PE                    1001    
+            pvpe=$3;getline			#Free PE                     126     
+            pvfree=$3;getline			#Allocated PE                875         
+            actpe=$3;getline			#Stale PE                    0       
+            getline				#IO Timeout (Seconds)        default             
+
+            printf " %20s %15s %4d %10d %10d %10d %s\n", pv ,vg ,nlvs,pvfree*4,actpe*4 ,pvpe*4, alt_pv
+            }
+
+        $0 == "   --- Distribution of physical volume ---" {
+            getline			 #   LV Name            LE of LV  PE for LV 
+            getline
+            if ( verbose )
+                print ""
+            for (i=0 ; i< nlvs ; i++) 
+                {
+                if ( verbose )
+	            printf " %35s  %15s %10d \n", $1 ," ", $2*4	#   /dev/vg02/lvol34   125       125       
+	            getline
+	        }
+
+            if ( verbose != 0 )
+            print "________________________________________________________________________________________________________________"
+            exit
+    }' verbose=$verbose 
+
+done
+
+#rm $FILEWRK*
