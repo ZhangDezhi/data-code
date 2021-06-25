@@ -1,0 +1,42 @@
+* [[elisp:(org-projectile-open-project%20"mana")][mana]] [3/9]
+ :PROPERTIES:
+ :CATEGORY: mana
+ :END:
+** DONE
+[[file:~/Development/mana/apps/blockchain/lib/blockchain/contract/create_contract.ex::insufficient_gas_before_homestead%20=][fix
+this check using evm.configuration]]
+CLOSED: [2018-08-08 Ср 09:14]
+[[https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.md][eip2]]:
+If contract creation does not have enough gas to pay for the
+final gas fee for
+adding the contract code to the state, the contract creation
+fails (i.e. goes out-of-gas)
+rather than leaving an empty contract.
+** DONE Upgrade Elixir to 1.7.
+CLOSED: [2018-08-08 Ср 09:14]
+** TODO [#A] Difficulty tests
+** TODO [#C] Upgrage to OTP 21
+** DONE [#A] EIP150
+CLOSED: [2018-08-14 Вт 21:25]
+*** DONE operation cost changes
+CLOSED: [2018-08-08 Ср 20:31]
+*** DONE 1/64th for a call and create
+CLOSED: [2018-08-14 Вт 21:25]
+** TODO [#C] Refactor interfaces
+** TODO [#B] Caching for storage during
+execution
+** TODO [#B] Removing old merkle trees
+** TODO do not calculate cost twice
+* [[elisp:(org-projectile-open-project%20".emacs.d")][.emacs.d]]
+[1/3]
+:PROPERTIES:
+:CATEGORY: .emacs.d
+:END:
+** TODO fix flycheck issues (emacsconfig)
+** TODO use-package for fetching dependencies
+** DONE clean configuration
+CLOSED: [2018-08-26 Вс 11:48]
+
+
+:smile
+
