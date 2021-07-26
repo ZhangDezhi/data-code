@@ -1,0 +1,65 @@
+@startuml
+concise "Program Phase" as Phase
+concise "Feature Groups" as Features
+concise "Releases" as Version
+concise "Cycle" as Cycle
+concise "Scrum" as Scrum
+robust "Velocity" as Points
+Points has 18,16,14,12,10,8,6,4,2,1,0
+scale 7 as 35 pixels
+@-2
+@0
+Scrum is "Sprint 1"
+Phase is "Phase 1"
+Features is "Feature Group"
+Cycle is "Cycle 1"
+Points is 12
+Scrum -> Points : Meeting
+Version is "V.1"
+@2
+Points is 10
+@4
+Points is 8
+@6
+Points is 6
+@8
+Points is 4
+@10
+Points is 2
+@12
+Points is 1
+@13
+Points is 0
+@14
+Scrum is "Sprint 2"
+Scrum -> Points : Meeting
+@28
+Scrum is "Sprint 3"
+Cycle is "Cycle 2"
+Cycle -> Points : Meeting
+@42
+Scrum is "Sprint 4"
+Points is 0
+Scrum -> Points : Meeting
+@56
+Scrum is "Sprint 5"
+Cycle is "Cycle 3"
+Version is "V.2"
+@70
+Scrum is "Sprint 6"
+@84
+Scrum is "Sprint 7"
+Cycle -> Features : XYZ
+Features is "Feature Group"
+Cycle is "Cycle 4"
+@98
+Scrum -> Phase : ABC
+Phase is "Phase 2"
+Scrum is "Sprint 8"
+@112
+Features is "Feature Group"
+Cycle is "Cycle 5"
+Version is "V.3"
+@120
+Phase is "Phase 3"
+@enduml
