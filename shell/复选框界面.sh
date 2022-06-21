@@ -3,7 +3,7 @@
 # v1.0
 # Create by  :ZhangDezhi
 # Create Time:2021-06-04 08:08
-# Last Modified  : 2021-06-04 08:14:10
+# Last Modified  : 2022-01-29 17:15:01
 # This is a Script.
 #------------------------------------------
 DISTROS=$(whiptail --title "Test Checklist Dialog" --radiolist \

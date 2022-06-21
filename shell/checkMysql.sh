@@ -1,7 +1,7 @@
 #!/bin/bash
 #!Author:ZhangDezhi
 # Create Time:2021-02-07 16:22
-# Last Modified  : 2021-10-20 17:38:41
+# Last Modified  : 2022-01-29 14:08:10
 # Name:aaa.sh
 # Version: v1.0
 # Description: 检查mysql是否正常脚本
