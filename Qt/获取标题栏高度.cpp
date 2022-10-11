@@ -1,0 +1,1 @@
+style()->pixelMetric(QStyle::PM_TitleBarHeight);

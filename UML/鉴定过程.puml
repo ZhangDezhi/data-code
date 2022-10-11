@@ -1,0 +1,39 @@
+@startuml
+|Role1|
+start
+#lightgreen:[[http://www.google.com A]];
+:Request;
+|Role2|
+repeat
+repeat
+#lightgreen:[[http://www.google.com B]];
+:Generate and
+upload;
+|Role3|
+#lightgreen:[[http://www.google.com C]];
+:Initiates;
+|Role4|
+#lightgreen:[[http://www.google.com D]];
+:Tests;
+repeat while (Test passes?) is (No)
+-> Yes;
+|Role3|
+#lightgreen:F;
+:Approves,
+requests;
+|Role4|
+#lightgreen:I;
+:Tests again;
+repeat while (Tests pass?) is (No)
+-> Yes;
+|Role3|
+:Notifies;
+|Role5|
+#lightgreen:J;
+:Releases;
+|Role2|
+#lightgreen:K;
+:Documents;
+:Archives;
+stop
+@enduml

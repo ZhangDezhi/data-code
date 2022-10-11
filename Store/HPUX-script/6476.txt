@@ -1,0 +1,224 @@
+
+	#!/sbin/sh
+# Configuration of the Logical Volumes
+# @(#) (C) chrisanoruo@diamondbank.com / 2000-07-24
+
+LANG=C ; export LANG
+PATH=$PATH:/sbin:/usr/sbin:/etc
+
+verbose=0
+# parse command line arguments
+if [ $# -gt 0 ]
+then
+  args=""
+  for arg
+  do
+    case $arg in
+         -help|-\?|-h) echo "Usage: $0 [-v] [<vg>]"
+                       exit 0 
+                       ;;
+                   -v) verbose=1 ;;
+     [0-9]|[0-9][0-9]) args="$args `echo $arg|awk '{printf("vg%02d",$0)}'`" ;;
+                  vg*) args="$args $arg" ;;
+    esac
+  done
+  vgs=`vgdisplay $args 2>&-|awk '/VG Name/{print $NF}'|sort`
+else
+  vgs=`vgdisplay 2>&-|awk '/VG Name/{print $NF}'|sort`
+fi
+
+# header
+echo "\
+    LOGICAL VOLUME CONFIGURATION        `hostname`        `date '+%d.%m.%Y'`
+
+    ---------------------------------------------------------------------------
+    VOLUMEGROUP : CAPACITY / PE-SIZE (MB) [MAJOR MINOR]
+      DEVICEFILE         CAPACITY / FREE (MB)     HW-PATH      PRODUCT-ID
+        LOG.VOLUMEDEVICE  CAPACITY / FREE (MB) %USED  TYPE  MIRROR  MOUNTPOINT"
+if [ $verbose = 1 ]
+then
+echo "          DEVICEFILE  [MAJOR MINOR]   USED (MB)"
+fi
+echo "    ---------------------------------------------------------------------------\n"
+
+# loop over all volume groups
+for vg in $vgs
+do
+  pesize=`vgdisplay $vg|awk '/PE Size/{print $NF}'`
+  vgdisplay -v $vg|awk -vvg=$vg 'BEGIN{n=0}{
+if(/^PE Size/){pe=$NF}
+if(/^Total PE/){
+tpe=$NF;
+"ll " vg "/group |tail -1"|getline; 
+gr="[" $5 " " $6 "]";
+printf("    ---------------------------------------------------------------------------\n    %s : %5d / %d MB  %s\n",vg, tpe*pe,pe, gr)}
+if(/   PV Name/)
+{
+  pv[n]=$3
+  pf[n]=$4
+  n++;
+}
+if(/   Total PE/){tp=$NF}
+if(/   Free PE/){fp=$NF;
+for(i=0;i<n;i++)
+{
+  "ioscan -u " pv[i] " |tail -1"|getline; 
+  hw=$1;
+  if($NF=="ok")
+  {
+    pvv=pv[i];
+    sub("dsk","rdsk",pvv);
+    "diskinfo " pvv " |grep product"|getline
+  }
+  if(pf[i]=="Alternate")
+    printf("      %-20s Alternate Link        %-15s %s\n",pv[i],hw,$NF)
+  else
+    printf("      %-20s %5d / %-5d MB      %-15s %s\n",pv[i],tp*pe,fp*pe,hw,$NF)
+}
+n=0;
+}
+}'
+
+# get all logical volumes of one volume group
+  lvs=`vgdisplay -v $vg|awk '/LV Name/{print $NF}'`
+
+# loop over all logical volumes
+  for lv in $lvs
+  do
+    mb=`lvdisplay -v $lv |awk '/LV Size \(Mbytes\)/{print $NF}'`
+    cp=`lvdisplay -v $lv |awk '/Mirror copies/{print $NF}'`
+
+    fs=`bdf "$lv" 2>&-| xargs |awk '{print $NF}'`
+    case "$fs" in
+      *%) fs='N/A' ;;
+    esac
+    type fstyp >&- 2>&-
+    if [ $? = 0 ]
+    then
+      fst=`fstyp $lv 2>&- ||echo swap`
+    else
+      fst='hfs'
+      if [ -z "$fs" ]
+      then
+        swapinfo |grep -q $lv 
+        if [ $? = 0 ]
+        then
+          fst='swap'
+        fi
+      fi
+    fi
+    if [ "$fst" != "swap" ]
+    then
+      if [ $fs = 'N/A' ]
+      then
+        us=`bdf "$lv" 2>&-| xargs |awk '{print $(NF-2)/1024,$NF}'`
+      else
+        us=`bdf "$lv" 2>&-| xargs |awk '{print $(NF-2)/1024,$(NF-1)}'`
+      fi
+      echo "$lv $mb $us $fst $cp $fs" |awk '{printf("        %-20s %5d / %-5d MB %3s %-4s %d %s\n",$1,$2,$3,$4,$5,$6,$7)}'
+    else
+      echo "$lv $mb $fst $cp $fs" |awk '{printf("        %-20s %5d         MB     %-4s %d %s\n",$1,$2,$3,$4,$5)}'
+    fi
+
+  if [ $verbose = 1 ]
+  then
+    lvdisplay -v $lv |awk -v pesize=$pesize 'BEGIN{f=0;}{
+    if($0 ~ "Mirror copies") mr=$NF;
+    if($0 ~ "Stripes") stp=$NF;
+    if($0 ~ "Stripe Size") stps=$NF;
+    if(f==1 && $0 ~ "Logical extents") exit
+    if(f==1 && $0 ~ "/dev/dsk/")
+    {
+      pv=$1;
+      pe=$3;
+      "ls -n " pv|getline
+      major=$5;
+      minor=$6;
+      if(mr=="1")
+      {
+        if(stp!="0")
+          printf("          %-20s [%s %s] %5d MB mirrored+striped %d/%d\n",pv,major,minor,pe*pesize,stp,stps);
+        else  
+          printf("          %-20s [%s %s] %5d MB mirrored\n",pv,major,minor,pe*pesize);
+      }
+      else
+      {
+        if(stp!="0")
+          printf("          %-20s [%s %s] %5d MB striped %d / %d KB\n",pv,major,minor,pe*pesize,stp,stps);
+        else  
+          printf("          %-20s [%s %s] %5d MB\n",pv,major,minor,pe*pesize);
+      }
+    }
+    if(f==0 && $0 ~ "Distribution of logical volume")f=1;
+    }'
+  fi
+
+
+  done
+done
+
+nonlv=`
+{
+ bdf |awk '/^\/dev\/dsk\//{print $1,$2,$4,$5,$6}'
+ swapinfo |awk '/\/dev\/dsk/{print $NF,$2,"0 0 swap"}'
+}`
+
+if [ -n "$nonlv" ]
+then
+echo "\
+    ===========================================================================
+    OTHER (NON LVM) VOLUMES
+
+    ---------------------------------------------------------------------------
+    DEVICEFILE : CAPACITY (MB) [MAJOR MINOR]  HW-PATH  PRODUCT-ID
+      DEVICEFILE  EFFECTIVE CAPACITY / FREE (MB) %USED  TYPE  MOUNTPOINT
+    ---------------------------------------------------------------------------\n"
+
+  if [ -n "$nonlv" ]
+  then
+    echo "$nonlv" |awk 'BEGIN{n=0;}{
+    pv=$1;
+    mb=$2/1024;
+    fr=$3/1024;
+    pt=$4;
+    fs=$5;
+    if(fs != "swap")
+    {
+      "fstyp " pv | getline;
+      fst=$1;
+    }
+    new=1;
+    for(i=0;i<n;i++)
+    {
+      if(pvs[i] == pv)
+      {
+	new=0;
+	break;
+      }
+    }
+    if(new==1)
+    {
+      "ioscan -u " pv " |tail -1"|getline;
+      prod=$NF;
+      hw=$1;
+      pvv=pv;
+      sub("dsk","rdsk",pvv);
+      "diskinfo " pvv " 2>/dev/null |grep size"|getline
+      b=$2/1024;
+      "ls -n " pv|getline
+      major=$5;
+      minor=$6;
+    }
+    pvs[n++]=pv;
+    if(new==1)
+    {
+      printf("    ---------------------------------------------------------------------------\n");
+      printf("    %-15s : %5d MB [%s %s]     %-15s %s\n",pv,b,major,minor,hw,prod)
+    }
+    if(fs != "swap")
+      printf("      %-20s %5d / %5d MB %3s %4s %s\n",pv,mb,fr,pt,fst,fs);
+    else
+      printf("      %-20s %5d         MB      %s\n",pv,mb,fs);
+    }'
+  fi
+fi

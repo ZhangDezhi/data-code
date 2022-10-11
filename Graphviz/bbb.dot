@@ -1,0 +1,47 @@
+digraph run{
+
+  edge [style="dashed"];
+
+  a [label="开启App"];
+  b [label="是否登录"];
+  c [label="去登录"];
+  d [label="开始跑步"];
+  e [label="相关跑步数据计算"];
+  f [label="跑步完成"];
+  g [label="数据储存"];
+  h [label="分配卡牌"];
+  i [label="抽取卡牌"];
+  j [label="完成抽取"];
+  k [label="储存抽取卡牌信息"];
+
+  subgraph cluster_client{
+      label="客户端";
+      bgcolor="mintcream";
+      a;
+      b;
+      c;
+      d;
+      e;
+      f;
+      i;
+      j;
+    }
+    subgraph cluster_server{
+      label="服务端";
+      bgcolor="mintcream";
+      g;
+      h;
+      k;
+    }
+    a -> b;
+    b -> c [label="否"];
+    b -> d [label="是"];
+    c -> d;
+    d -> e;
+    e -> f;
+    f -> g [label="发送数据"];
+    g -> h;
+    h -> i [label="发送数据"];
+    i -> j;
+    j -> k [label="发送数据"];
+}

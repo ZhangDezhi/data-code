@@ -1,0 +1,25 @@
+@startuml
+|Manager|
+start
+:Tells new person to create accounts
+then enter support ticket;
+|New Hire|
+:Creates accounts
+----
+* Account1
+* Account2
+----
+Enters support ticket;
+|Support|
+:Grants access
+----
+* Tool1
+* Tool2
+* Tool3
+----
+Send welcome email;
+|New Hire|
+:Sets up tools;
+:Gets to work;
+stop
+@enduml

@@ -1,0 +1,1 @@
+ echo "96.56"| awk '{print int($0)}'

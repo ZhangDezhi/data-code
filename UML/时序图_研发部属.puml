@@ -1,0 +1,79 @@
+@startuml
+
+
+autonumber
+
+hide footbox
+
+title **Node 应用研发部署流程**
+
+
+actor "开发者" as user
+
+participant "代码仓库(GitLab)" as gitlab
+
+participant "持续集成系统" as ci
+
+participant "运维发布系统" as sys #orange
+
+participant "服务器" as server
+
+
+== 研发流程 ==
+
+user -> gitlab: 提交代码
+
+activate user
+
+deactivate user
+
+activate gitlab
+
+gitlab -> ci: 单元测试
+
+deactivate gitlab
+
+activate ci
+
+note right of ci: tar 或 docker
+
+ci -> ci: 打包
+
+ci -> sys: 推送
+
+note right of sys: 存储到 oss
+
+activate sys #orange
+
+deactivate ci
+
+deactivate sys
+
+
+...
+
+
+== 上线/回滚流程 ==
+
+user -> sys: 选择要上线的版本
+
+activate sys #orange
+
+activate user
+
+deactivate user
+
+sys -> server: 推送
+
+activate server
+
+note right of server: **无需--安装依赖--，快速且确定**
+
+server -> server: 解压
+
+server -> server: 启动
+
+server --> sys
+
+
+@enduml

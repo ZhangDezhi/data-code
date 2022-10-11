@@ -1,0 +1,2 @@
+# restartApp
+restart application mac 

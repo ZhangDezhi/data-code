@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<style type="text/css">
+* {
+    box-sizing: border-box;
+}
+
+.wrapper {
+    font-family: roboto;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.box-area {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.box-date {
+    display: flex;
+    /* 渐变线 */
+       background: linear-gradient(to right, #fff 40%, #caf1d1 50%, #fff 40%);
+    order: 2;
+    text-align: center;
+    font-size: 12px;
+    flex-basis: 50px;
+    color: #fff;
+}
+
+.box-date>span {
+    font-size: 12px;
+    padding: 5px 10px;
+    margin: auto;
+    background: #4fd166;
+    border-radius:25px;
+    margin-top: 25px;
+    margin-left: 5px;
+}
+
+.box-text {
+    text-align: center;
+    padding: 20px;
+    border-radius: 25px;
+    color: #000;
+    order: 3;
+    width: 80%;
+    padding-left: 10px;
+    background: #fff;
+    margin-bottom: 3%;
+}
+
+.box-text h2 {
+    margin: 0 auto;
+    font-size: 16px;
+    text-transform: uppercase;
+    background-color: #4fd166;
+    padding:10px;
+    text-align: left;
+}
+
+.box-text p {
+    margin: 0 auto;
+    font-size: 14px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 10px;
+}
+
+@media(min-width:640px) {
+    .box-text {
+        width: 100%;
+    }
+    .box-right .box-text {
+        order: 1;
+        padding-right: 10px;
+        border-radius: 25px;
+    }
+    .box-right {
+        order: 3;
+    }
+}
+.trace {
+    width:200px;
+    height:60px;
+    margin: 0 auto;
+    font-size:26px;
+    color:#008518;
+    background: url(../test/img/right.png) no-repeat right #caf3d2;
+}
+
+</style>
+<body>
+    <div class="trace" id="apply">审批单</div>
+    <div class="wrapper" id="wrapper1">
+        <div class="box-area">
+            <div class="box-date">
+                <span>1</span>
+            </div>
+            <div class="box-text">
+                <h2>李某某 2020-03-29 录入申请单</h2>
+                <p></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

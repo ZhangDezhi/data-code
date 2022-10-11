@@ -1,0 +1,26 @@
+#!/bin/ksh
+#
+# dginfo
+# Show a server's VxVM Configuration and Layout
+#
+
+echo "DGINFO - VxVM Summator v 1.0 Dec. 2005"
+echo "VxVM - All Versions"
+echo "AITS Unix"
+DGLIST=`vxdg list|awk '{print $1}'|grep -v "NAME"`
+echo
+echo "VxVM Summary for Server `hostname` @ `date`"
+echo
+for DG in $DGLIST;do
+
+ # Get Total Allocations
+ SIZE=`vxprint -ht  -g $DG|grep ^dm|awk '{s+=$6}END{printf "%8.2f",s/1024/1024}'`
+ FREE=`vxdg -g $DG free|grep -v DISK|awk '{s+=$5}END{printf "%8.2f",s/1024/1024}'`
+ printf "DG: %-20s Capacity: %7.2f GB             Free: %7.2f GB\n" $DG $SIZE $FREE
+ echo "=========================================================================="
+ vxprint -ht -g $DG|grep ^v|grep -v dcl|awk '{print $2,$6}'|while read vol size;do
+ fs=`mount -p|grep -w /dev/vx/dsk/$DG/$vol|awk '{print $2}'`
+ printf "VOL: %-20s    %10d GB. %30s\n"  $vol $((size/1024/1024)) $fs
+ done
+ printf "\n"
+done

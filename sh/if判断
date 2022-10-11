@@ -1,0 +1,69 @@
+#!/bin/sh
+a=10
+b=20
+#①
+if [ $a -eq $b ]; then
+  echo "a is equal to b";
+fi
+if [ $a -gt $b ]; then
+  echo "a is great than b";
+fi
+#②
+if [ $a -lt  $b ]
+then
+  echo "a is less than b";
+fi
+# the EOF
+
+
+
+cat if1.sh
+#!/bin/sh
+# a=10
+# b=20
+if [ $1 -eq $2 ]; then
+  echo "the first number is equal to the second";
+fi
+if [ $1 -gt $2 ]; then
+  echo "the first number is great than the second";
+fi
+if [ $1 -lt  $2 ]
+then
+  echo "the first number is less than the second";
+fi
+# the EOF
+
+
+
+
+整数比较
+
+-eq：等于
+
+-nq：不等
+
+-gt：大于
+
+-lt：小于
+
+-ge：大于等于
+
+-le：小于等于
+
+
+用法：
+
+A=3
+
+B=4
+
+[ $A -eq $B ]
+
+echo $? 
+
+
+逻辑与：&&
+
+逻辑或：||
+
+

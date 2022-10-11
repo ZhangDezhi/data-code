@@ -1,0 +1,33 @@
+#!/usr/contrib/bin/perl 
+#
+# vginfo - display comprehensive information on LVM COnfiguration
+#          incluiding VG's, LV's and PVs
+#
+#
+my $host =`hostname`.`date`;
+print "VGINFO v 1.0\n";
+print "LVM Managed Storage Information for $host \n";
+print "\n";
+print "LVM   LVM                            Mirr Allocated    Total     Free\n";
+print "Type  Object Name                   Count  (Mbytes) (Mbytes) (Mbytes)\n";
+print "----  ---------------------------   -----  -------- -------- --------\n";
+foreach $_ (`/usr/sbin/vgdisplay -v`) {
+  if (/^(\s*\w\w) Name\s+(\S+)/) {
+    $type = $1;
+    $name = $2;
+    $name =~ s/\/dev//;
+    }
+  $pe = $1   if (/^PE Size \(Mbytes\)\s+(\w+)/);
+  $alloc = $1 if (/Allo.* PE\s+(\w+)/);
+  $total = $1 if (/Total PE\s+(\w+)/);
+  $free = $1 if (/Free PE\s+(\w+)/);
+  $s = $1 if (/Used PV\s+(\w+)/);
+  if (/^$/) {
+       if ($alloc + $total + $free) {
+         printf ("%-6s%-30s%3s%12d%9d%9d\n",
+           $type, $name, ($s)?$s :" ", $pe * $alloc, $pe * $total, $pe * $free);
+         } else { print "\n" } ;
+       $name = $type = " ";
+       $alloc = $total = $free = $s = 0;
+       }
+  }

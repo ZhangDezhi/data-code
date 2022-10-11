@@ -1,0 +1,18 @@
+#
+# 使用info/warning/error增加调试信息
+#
+
+
+$(info “here add the debug info”) #注,info信息,不打印信息所在行号
+
+$(warning “here add the debug info”)
+
+$(error “error: this will stop the compile”) #这个可以停止当前Makefile编译
+
+$(info $(TARGET_DEVICE) ) #打印变量
+
+
+
+#echo 只能在target后面
+@echo “start the compilexxxxxxxxxxxxxxxxxxxxxxx”
+@echo $(files)

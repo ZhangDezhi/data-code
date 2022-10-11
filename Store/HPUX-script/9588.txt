@@ -1,0 +1,156 @@
+#!/usr/bin/sh
+#
+# Ver 2.0  -Change Blks to blk/frag size and add largefile status
+#           Made: FSTYPE blk/frag and largefile optional with -v
+#           to reduce the width of the line
+#
+# Ver 1.2  -Expanded filesystem type to handle autofs
+# Ver 1.1  -Added blocksize column for filesystem blocks
+# Ver 1.0  -Original
+#
+# Show bdf in megs for easy reading
+#
+# Usage:  bdfmegs 
+
+# The width of the source filesystem will be adjusted to the
+# longest path (ie, NFS or other long device filename).  All
+# fields are in megabytes (defined as Kbytes/1024).  Field 
+# widths are 7 digits for multi-terabyte capability.
+
+set -u
+
+# These values are tied to the widths if the fields and the title.
+
+typeset -R7  MTOT
+typeset -R7  MUSED
+typeset -R7  MAVAIL
+typeset -R5  PERCENT
+typeset -R2  BLKSIZE
+typeset -i   FRAGSIZE
+typeset -R6  FSTYPE
+
+# Check if -v was specified
+
+VERBOSE=/usr/bin/false
+if [ $# -gt 0 ]
+then
+   if [ "$1" = "-v" ]
+   then
+      VERBOSE=/usr/bin/true
+   fi
+fi
+
+# Find the longest source string with a sweep through mount -p
+# Minimum length is 12 so typeset will pad on the right when
+# needed.
+
+MAXLEN=12
+/sbin/mount -p | while read SOURCE MOUNTPOINT DUMMY
+do
+   [ ${#SOURCE} -gt $MAXLEN ] && MAXLEN=${#SOURCE}
+done
+
+# Variable width typesets here
+#
+#  By using eval, a variable typeset instruction can be created
+#  and then executed as part of the inline script.
+
+#  First is for the filesystem source string
+#  Second is to pad the title. Note that PAD must be typeset to
+#  a value greater than 0, so subtract 11 for the evaluation.
+#  (the minimum width for a source directory is 12 chars)
+
+eval "typeset -L$MAXLEN FS"
+eval "typeset -L$(( MAXLEN - 11 )) PAD=' '"
+
+# Now get all filesystems including filesystem type
+# Separate the mount point from FStype with a :
+
+MYMOUNTS=$(/sbin/mount -p | /usr/bin/awk '{print $2":"$3}')
+
+# Print the title line. $PAD is used to prorvide proper spacing for
+#   short to long source filesystem names.  This must match the
+#   evaluated typeset value for $FS above.  We'll split the line
+#   at %Used in order to have plain and verbose versions.
+
+echo "File System $PAD Mbytes    Used   Avail %Used \c"
+
+if $VERBOSE
+then
+   echo "  Type Bk/Fg Lrg Mounted on"
+else
+   echo "Mounted on"
+fi
+
+# Now walk through each mountpoint gathering info
+
+# Because bdf may have a double line when a long filesystem is
+#   shown, get a list of mounted filesystems first (just the 2nd
+#   field of mount -p) then go through that list 1 at a time to
+#   get details and automatically paste the line in case it's 
+#   longer than normal and therefore folded.
+
+for MNTINFO in $MYMOUNTS
+do
+   MOUNTPOINT=$( echo $MNTINFO | cut -f1 -d: )
+   FSTYPE=$( echo $MNTINFO | cut -f2 -d: )
+   /usr/bin/bdf $MOUNTPOINT 2>/dev/null \
+        | grep -vi \%used \
+        | paste - - \
+        | while read FS TOT USED AVAIL PERCENT MNT
+   do
+       MTOT=$(echo $TOT  \
+           | /usr/bin/awk '{print int($1/1024+.5)}')
+       MUSED=$(echo $USED  \
+            | /usr/bin/awk '{print int($1/1024+.5)}')
+       MAVAIL=$(echo $AVAIL  \
+            | /usr/bin/awk '{print int($1/1024+.5)}')
+       echo "$FS $MTOT $MUSED $MAVAIL $PERCENT \c"
+
+       if $VERBOSE
+       then
+
+# filesystem features
+
+          BLKSIZE=$(/usr/bin/df -g $MNT \
+	    | /usr/bin/grep "file system block" \
+	    | /usr/bin/awk '{print $1/1024}')
+          FRAGSIZE=$(/usr/bin/df -g $MNT \
+	    | /usr/bin/grep "file system block" \
+	    | /usr/bin/awk '{print $6/1024}')
+
+# Check only vxfs and hfs for features
+
+          case $FSTYPE in
+
+# For vxfs, fsadm gets info from mountpoint but hfs needs the
+# raw lvol
+
+	"  vxfs" ) LGFILE=$(/usr/sbin/fsadm -F vxfs $MNT \
+		  | /usr/bin/grep -F largefiles)
+		  if [ $( echo $LGFILE | /usr/bin/grep -Fc no) -gt 0 ]
+		  then
+		     LG=" no"
+		  else
+		     LG="yes"
+		  fi
+ 	          ;;
+        "   hfs" ) LVOL="r$(basename $FS)"
+		  VG="$(dirname $FS)"
+		  if [ $(/usr/sbin/fsadm -F hfs $VG/$LVOL \
+		     | /usr/bin/grep -Fc nolargefiles) -lt 1 ]
+		  then
+		     LG="yes"
+		  else
+		     LG=" no"
+		  fi
+	          ;;
+	      * ) LG="   "
+	          ;;
+          esac
+          echo "$FSTYPE ${BLKSIZE}/${FRAGSIZE}K $LG $MNT"
+       else
+          echo "$MNT"
+       fi
+   done
+done

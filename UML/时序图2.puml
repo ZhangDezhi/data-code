@@ -1,0 +1,24 @@
+@startuml
+hide footbox
+box "Team1" #linen
+actor Role1
+end box
+
+box "Team2" #linen
+actor Role2
+actor Role3
+end box
+
+box "Team3" #linen
+actor Role4
+end box
+
+Role4 -> Role1 : Sends this info
+Role4 -> Role2 : Sends more info
+Role2 -> Role4 : Sends info back
+Role1 -> Role2 : Helps with this
+Role2 -> Role1 : Helps with that
+Role1 -> Role3 : Sends different info
+Role3 -> Role1 : Sends different info back
+
+@enduml

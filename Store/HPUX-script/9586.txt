@@ -1,0 +1,35 @@
+bdf|grep -v Filesystem|tr -s " " " "|cut -d" " -f 1-4|sort| 
+awk 'BEGIN { 
+prev=""; 
+totals[0]=0; 
+totals[1]=0; 
+totals[2]=0; 
+gtotals[0]=0; 
+gtotals[1]=0; 
+gtotals[2]=0; 
+printf("%4s %14s %14s %14s\n","VG","Size","In use","Available"); 
+} 
+{split($1,curr,"/"); 
+if (prev!="" && prev!=curr[3]) 
+{printf("%4s %14.2f %14.2f %14.2f\n",prev,totals[0]/1048576,totals[1]/1048576,totals[2]/1048576); 
+gtotals[0]+=totals[0]; 
+gtotals[1]+=totals[1]; 
+gtotals[2]+=totals[2]; 
+totals[0]=0; 
+totals[1]=0; 
+totals[2]=0; 
+} 
+prev=curr[3]; 
+totals[0]+=$2; 
+totals[1]+=$3; 
+totals[2]+=$4; 
+} 
+END { 
+gtotals[0]+=totals[0]; 
+gtotals[1]+=totals[1]; 
+gtotals[2]+=totals[2]; 
+printf("%4s %14.2f %14.2f %14.2f\n",prev,totals[0]/1048576,totals[1]/1048576,totals[2]/1048576); 
+printf("%4s %14s %14s %14s\n","----","--------------","--------------","--------------"); 
+printf("%4s %14.2f %14.2f %14.2f\n","Totl",gtotals[0]/1048576,gtotals[1]/1048576,gtotals[2]/1048576); 
+}' 
+

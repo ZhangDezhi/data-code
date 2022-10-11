@@ -1,0 +1,7 @@
+digraph { // graph [fontname="Microsoft Yahei"];
+ node [shape=plaintext, fontname="Microsoft Yahei"];
+ 
+填单、贴发票->找刘工签字->找马芳冉签字->找李总签字->找张总签字（15号、25号）->会计填报->财务pos机打到银行卡;
+
+}
+
